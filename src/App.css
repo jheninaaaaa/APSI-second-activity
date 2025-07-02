@@ -1,38 +1,129 @@
-.App {
+body {
+  font-family: 'Poppins';
+  background: radial-gradient(circle at top left, hsl(349, 48%, 26%), #060606);
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  text-align: center;
+  background-color: #ccc;
+  padding: 20px;
+}
+
+.game-title {
+  font-size: 50px;
+  margin-bottom: 20px;
+}
+
+.game-layout {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.player-panel {
+  width: 150px;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  flex:1 1 33%;
+}
+
+.player-panel.active {
+  background-color: #dff0d8;
+}
+
+.player-panel.inactive {
+  opacity: 0.5;
+}
+
+.player-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.score {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.reset-button {
+  padding: 6px 12px;
+  border: 1px solid #666;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.reset-button:hover {
+  background-color: #ddd;
+}
+
+.game-board {
+  display: grid;
+  gap: 8px;
+  width: fit-content;
+}
+
+.tile {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #999;
+  background-color: #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.tile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tile.incorrect {
+  background-color: red;
+  opacity: 0.7;
+}
+
+.winner-banner {
+  margin-top: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: green;
+}
+
+.overlay-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(240, 240, 240, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.winner-screen h1 {
+  font-size: 3rem;
+  color: green;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.score-display {
+  margin-top: 20px;
+  font-size: 1.5rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.restart-button {
+  margin-top: 30px;
+  font-size: 1rem;
+  padding: 10px 20px;
+  cursor: pointer;
 }

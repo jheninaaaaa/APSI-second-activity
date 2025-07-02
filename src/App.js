@@ -1,163 +1,147 @@
 import React, { useState } from 'react';
 import './App.css';
-import chickenImage from 'https://static.vecteezy.com/system/resources/thumbnails/006/325/752/small_2x/chicken-cartoon-colored-clipart-illustration-free-vector.jpg'
-import bananaImage from 'https://thumbs.dreamstime.com/b/bunch-bananas-6175887.jpg?w=768'
+import PlayerPanel from './components/PlayerPanel';
+import GameBoard from './components/GameBoard';
+import { chicken, banana } from './assets/images';
 
-const tile_count = 36
-const chicken_display = chickenImage
-const banana_display = bananaImage
-const grid_columns = 6
-const tile_size = 100
+const TILE_COUNT = 36;
+const GRID_COLUMNS = 6;
 
-function getShuffledTiles () {
-  const tiles = [
-    ...Array(18).fill().map(chicken_display),
-    ...Array(18).fill().map(banana_display)
-  ]
+function getShuffledTiles() {
+  const chickenTiles = Array(18).fill(null).map(() => ({
+    img: chicken,
+    type: 'chicken',
+  }));
 
-  for (let i = tiles.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i+1));
-    [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+  const bananaTiles = Array(18).fill(null).map(() => ({
+    img: banana,
+    type: 'banana',
+  }));
+
+  const allTiles = [...chickenTiles, ...bananaTiles];
+
+  for (let i = allTiles.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allTiles[i], allTiles[j]] = [allTiles[j], allTiles[i]];
   }
-  return tiles;
+
+  return allTiles;
 }
 
 function App() {
   const [tiles, setTiles] = useState(getShuffledTiles());
-  const [revealed, setRevealed] = useState(Array(tile_count).fill(false));
-  const [lastIncorrect, setLastIncorrect] = useState(Array(tile_count).fill(false));
+  const [revealed, setRevealed] = useState(Array(TILE_COUNT).fill(false));
+  const [lastIncorrect, setLastIncorrect] = useState(null);
   const [player, setPlayer] = useState('chicken');
   const [gameOver, setGameOver] = useState(false);
-  const [setWinner] = useState('');
-  const [scores, setScores] = useState({chicken: 0, banana: 0});
-  /**const getRemainingTiles = (type) => {
-    return tiles.filter((tiles, i) => tiles.type === type && !revealed[i]).length;
-  }
-  const chickenLeft = getRemainingTiles('chicken');
-  const bananaLeft = getRemainingTiles('banana');*/
-  const getCurrentPlayerImage = () => {
-    return player === 'chicken' ? chicken_display : banana_display;
-  }
-  const handleTileClick = (i) => {
-    if (revealed[i] || gameOver) return;
+  const [winner, setWinner] = useState('');
+  const [scores, setScores] = useState({ chicken: 0, banana: 0 });
+  const [resetClicks, setResetClicks] = useState({ chicken: false, banana: false });
 
-    const newRevealed = [...revealed];
-    newRevealed[i] = true;
-    setRevealed(newRevealed);
+  const handleTileClick = (index) => {
+    if (revealed[index] || gameOver) return;
 
-    if (tiles[i].type !== player) {
-      setLastIncorrect(i);
-      const nextPlayer = player === 'chicken' ? 'banana': 'chicken';
-      setPlayer(nextPlayer);
+    const updatedRevealed = [...revealed];
+    updatedRevealed[index] = true;
+    setRevealed(updatedRevealed);
 
-      const winner = nextPlayer.charAt(0).toUpperCase()+nextPlayer.slice(1);
-      setWinner(winner);
+    const clickedTile = tiles[index];
+
+    if (clickedTile.type !== player) {
+
+      setLastIncorrect(index);
+      const opponent = player === 'chicken' ? 'banana' : 'chicken';
+      setWinner(opponent);
       setGameOver(true);
 
       setScores(prev => ({
-        ...prev, [nextPlayer]: prev[nextPlayer] + 1
+        ...prev,
+        [opponent]: prev[opponent] + 1,
       }));
+    } else {
+
+      setScores(prev => ({
+        ...prev,
+        [player]: prev[player] + 1,
+      }));
+
+      setPlayer(prev => (prev === 'chicken' ? 'banana' : 'chicken'));
     }
-
-    setScores(prev => ({
-      ...prev, [player]: prev[player] + 1
-    }));
-
-    setPlayer(prev => prev === 'chicken' ? 'banana': 'chicken');
   };
 
-  const handleRestart = () => {
-    setTiles(getShuffledTiles());
-    setRevealed(Array(tile_count).fill(false));
-    setLastIncorrect(null);
-    setPlayer('chicken');
-    setGameOver(false);
-    setWinner('');
-    setScores({chicken: 0, banana: 0});
+  const handleResetClick = (playerId) => {
+    const updatedClicks = { ...resetClicks, [playerId]: true };
+    setResetClicks(updatedClicks);
+
+    if (updatedClicks.chicken && updatedClicks.banana) {
+      setTiles(getShuffledTiles());
+      setRevealed(Array(TILE_COUNT).fill(false));
+      setLastIncorrect(null);
+      setPlayer('chicken');
+      setGameOver(false);
+      setWinner('');
+      setScores({ chicken: 0, banana: 0 });
+      setResetClicks({ chicken: false, banana: false });
+    }
   };
 
   return (
-    <div className="container">
-      <div className="info-section">
-        <div className="score-display">
-          <h3 className="section-title">Score Board</h3>
-          <div className="score-items">
-            <div className="score-item">
-              <span className="score-chicken">Chicken</span>
-              <span className="score-value"></span>{scores.chicken}<span/>
-            </div>
-            <div className="score-item">
-              <span className="score-banana">Banana</span>
-              <span className="score-value"></span>{scores.banana}<span/>
-            </div>
-          </div>
-        </div>
+    <div className="app-container">
+      <h1 className="game-title">MineSweeper</h1>
+      <div className="game-layout">
+        <PlayerPanel
+          type="chicken"
+          image={chicken}
+          score={scores.chicken}
+          active={player === 'chicken'}
+          onReset={() => handleResetClick('chicken')}
+          resetState={resetClicks.chicken}
+        />
 
-      <div className="game-status">
-        <h3 className="section-title">Game Status</h3>
-        <div className="game-status-content">
-          <p>Two players: <b>Chicken</b> and <b>Banana</b></p>
-          {gameOver ? (
-            <div className="winner-message">
-              <img
-                src={player === 'chicken' ? chicken_display : banana_display}
-                alt=""
-                className="player-icon"
-                aria-hidden="true"
-              />
-              <span style={{ color: 'green' }}>{player.charAt(0).toUpperCase() + player.slice(1)} Wins!</span>
-            </div>
-            ) : (
-              <div className="current-player">
-                <img
-                  src={getCurrentPlayerImage()}
-                  alt=""
-                  className="player-icon"
-                  aria-hidden="true"
-                />
-                <span>{player.charAt(0).toUpperCase() + player.slice(1)}'s Turn</span>
-              </div>
-            )}
-          </div>
-        </div>
+        <GameBoard
+          tiles={tiles}
+          revealed={revealed}
+          onTileClick={handleTileClick}
+          columns={GRID_COLUMNS}
+          lastIncorrect={lastIncorrect}
+        />
+
+        <PlayerPanel
+          type="banana"
+          image={banana}
+          score={scores.banana}
+          active={player === 'banana'}
+          onReset={() => handleResetClick('banana')}
+          resetState={resetClicks.banana}
+        />
       </div>
 
-      <div className="game-section">
-        <div className="grid" style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${grid_columns}, ${tile_size}px)`,
-          gap: '8px',
-          justifyContent: 'center'
-        }}>
-          {tiles.map((tile, index) => (
-            <button
-              key={index}
-              className="grid-tile"
-              style={{
-                width: tile_size,
-                height: tile_size,
-                background: revealed[index] ? '#f0f0f0' : '#ddd',
-                border: '2px solid #aaa',
-                cursor: gameOver || revealed[index] ? 'not-allowed' : 'pointer',
-                padding: 0,
-              }}
-              onClick={() => handleTileClick(index)}
-              disabled={gameOver || revealed[index]}
-              data-incorrect={index === lastIncorrect}
-            >
-              {revealed[index] ? (
-                <img src={tile.img} alt={tile.type} style={{ width: '90%', height: '90%' }} />
-              ) : (
-                <span style={{ fontSize: 18 }}>{index + 1}</span>
-              )}
-            </button>
-          ))}
+      {gameOver && (
+        <div className="overlay-screen winner-screen">
+          <h1>{winner.charAt(0).toUpperCase() + winner.slice(1)} Wins!</h1>
+          <div className="score-display">
+            <p>Chicken: {scores.chicken}</p>
+            <p>Banana: {scores.banana}</p>
+          </div>
+          <button onClick={() => {
+            setTiles(getShuffledTiles());
+            setRevealed(Array(TILE_COUNT).fill(false));
+            setLastIncorrect(null);
+            setPlayer('chicken');
+            setGameOver(false);
+            setWinner('');
+            setScores({ chicken: 0, banana: 0 });
+            setResetClicks({ chicken: false, banana: false });
+          }}>
+            Reset
+          </button>
         </div>
+      )}
+      <div>
 
-        <button className="restart-button" onClick={handleRestart}> Reset</button>
       </div>
     </div>
   );
 }
-        
+
 export default App;
