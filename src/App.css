@@ -1,99 +1,76 @@
-body {
-  font-family: 'Poppins';
-  background: radial-gradient(circle at top left, hsl(349, 48%, 26%), #060606);
-  margin: 0;
-  padding: 0;
-}
-
 .app-container {
+  font-family: Arial, sans-serif;
   text-align: center;
-  background-color: #ccc;
   padding: 20px;
+  background-color: #fdfdfd;
 }
 
 .game-title {
-  font-size: 50px;
-  margin-bottom: 20px;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  color: #333;
 }
 
-.game-layout {
+.layout {
   display: flex;
   justify-content: center;
-  gap: 30px;
+  align-items: flex-start;
+  gap: 40px;
 }
 
 .player-panel {
   width: 150px;
-  padding: 10px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  transition: background-color 0.3s;
-  flex:1 1 33%;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f2f2f2;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.player-panel h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
 }
 
 .player-panel.active {
-  background-color: #dff0d8;
+  background-color: #c0ffc0;
 }
 
 .player-panel.inactive {
   opacity: 0.5;
 }
 
-.player-img {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-  margin-bottom: 10px;
-}
-
-.score {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.reset-button {
-  padding: 6px 12px;
-  border: 1px solid #666;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.reset-button:hover {
-  background-color: #ddd;
-}
-
-.game-board {
+.grid {
   display: grid;
   gap: 8px;
-  width: fit-content;
 }
 
 .tile {
-  width: 60px;
-  height: 60px;
-  border: 2px solid #999;
-  background-color: #ccc;
-  font-size: 16px;
+  width: 70px;
+  height: 70px;
+  background-color: #ddd;
+  border: 2px solid #aaa;
   cursor: pointer;
-  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.tile-img {
-  width: 100%;
-  height: 100%;
+.tile.revealed {
+  background-color: #f5f5f5;
+}
+
+.tile img {
+  width: 90%;
+  height: 90%;
   object-fit: contain;
 }
 
 .tile.incorrect {
-  background-color: red;
-  opacity: 0.7;
-}
-
-.winner-banner {
-  margin-top: 20px;
-  font-size: 24px;
-  font-weight: bold;
-  color: green;
+  border-color: red;
+  box-shadow: 0 0 10px red;
 }
 
 .overlay-screen {
@@ -102,28 +79,38 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(240, 240, 240, 0.95);
+  background-color: rgba(250, 250, 250, 0.95);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 100;
-  text-align: center;
+  z-index: 10;
+  padding: 40px;
 }
 
-.winner-screen h1 {
+.overlay-screen h2 {
   font-size: 3rem;
-  color: green;
+  margin-bottom: 20px;
+  color: #28a745;
 }
 
-.score-display {
+.overlay-screen p {
+  font-size: 1.2rem;
+  margin: 4px 0;
+}
+
+.overlay-screen button {
   margin-top: 20px;
-  font-size: 1.5rem;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.restart-button {
-  margin-top: 30px;
-  font-size: 1rem;
-  padding: 10px 20px;
-  cursor: pointer;
+.overlay-screen button:hover {
+  background-color: #0056b3;
 }

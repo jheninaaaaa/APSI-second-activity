@@ -1,31 +1,29 @@
 import React, { useState } from 'react';
 import './App.css';
-import PlayerPanel from './components/PlayerPanel';
-import GameBoard from './components/GameBoard';
-import { chicken, banana } from './assets/images';
 
 const TILE_COUNT = 36;
 const GRID_COLUMNS = 6;
 
+// Chickens and bananas (18 each)
+const imageUrls = [
+  ...Array(18).fill('https://thumbs.dreamstime.com/b/bunch-bananas-6175887.jpg?w=768'),
+  ...Array(18).fill('https://static.vecteezy.com/system/resources/thumbnails/006/325/752/small_2x/chicken-cartoon-colored-clipart-illustration-free-vector.jpg'),
+];
+
+const getTileType = (url) => url.includes('banana') ? 'banana' : 'chicken';
+
 function getShuffledTiles() {
-  const chickenTiles = Array(18).fill(null).map(() => ({
-    img: chicken,
-    type: 'chicken',
+  const tiles = imageUrls.map((url) => ({
+    img: url,
+    type: getTileType(url),
   }));
 
-  const bananaTiles = Array(18).fill(null).map(() => ({
-    img: banana,
-    type: 'banana',
-  }));
-
-  const allTiles = [...chickenTiles, ...bananaTiles];
-
-  for (let i = allTiles.length - 1; i > 0; i--) {
+  for (let i = tiles.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [allTiles[i], allTiles[j]] = [allTiles[j], allTiles[i]];
+    [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
   }
 
-  return allTiles;
+  return tiles;
 }
 
 function App() {
@@ -36,7 +34,6 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const [winner, setWinner] = useState('');
   const [scores, setScores] = useState({ chicken: 0, banana: 0 });
-  const [resetClicks, setResetClicks] = useState({ chicken: false, banana: false });
 
   const handleTileClick = (index) => {
     if (revealed[index] || gameOver) return;
@@ -48,98 +45,76 @@ function App() {
     const clickedTile = tiles[index];
 
     if (clickedTile.type !== player) {
-
-      setLastIncorrect(index);
       const opponent = player === 'chicken' ? 'banana' : 'chicken';
+      setLastIncorrect(index);
       setWinner(opponent);
       setGameOver(true);
 
-      setScores(prev => ({
+      setScores((prev) => ({
         ...prev,
         [opponent]: prev[opponent] + 1,
       }));
     } else {
-
-      setScores(prev => ({
+      setScores((prev) => ({
         ...prev,
         [player]: prev[player] + 1,
       }));
 
-      setPlayer(prev => (prev === 'chicken' ? 'banana' : 'chicken'));
+      setPlayer((prev) => (prev === 'chicken' ? 'banana' : 'chicken'));
     }
   };
 
-  const handleResetClick = (playerId) => {
-    const updatedClicks = { ...resetClicks, [playerId]: true };
-    setResetClicks(updatedClicks);
-
-    if (updatedClicks.chicken && updatedClicks.banana) {
-      setTiles(getShuffledTiles());
-      setRevealed(Array(TILE_COUNT).fill(false));
-      setLastIncorrect(null);
-      setPlayer('chicken');
-      setGameOver(false);
-      setWinner('');
-      setScores({ chicken: 0, banana: 0 });
-      setResetClicks({ chicken: false, banana: false });
-    }
+  const handleReset = () => {
+    setTiles(getShuffledTiles());
+    setRevealed(Array(TILE_COUNT).fill(false));
+    setLastIncorrect(null);
+    setPlayer('chicken');
+    setGameOver(false);
+    setWinner('');
+    setScores({ chicken: 0, banana: 0 });
   };
 
   return (
     <div className="app-container">
-      <h1 className="game-title">MineSweeper</h1>
-      <div className="game-layout">
-        <PlayerPanel
-          type="chicken"
-          image={chicken}
-          score={scores.chicken}
-          active={player === 'chicken'}
-          onReset={() => handleResetClick('chicken')}
-          resetState={resetClicks.chicken}
-        />
+      <h1 className="game-title">Chicken Banana Game!</h1>
 
-        <GameBoard
-          tiles={tiles}
-          revealed={revealed}
-          onTileClick={handleTileClick}
-          columns={GRID_COLUMNS}
-          lastIncorrect={lastIncorrect}
-        />
+      <div className="layout">
+        <div className={`player-panel ${player === 'chicken' ? 'active' : 'inactive'}`}>
+          <h2>Chicken</h2>
+          <p>Score: {scores.chicken}</p>
+        </div>
 
-        <PlayerPanel
-          type="banana"
-          image={banana}
-          score={scores.banana}
-          active={player === 'banana'}
-          onReset={() => handleResetClick('banana')}
-          resetState={resetClicks.banana}
-        />
+        <div className="grid" style={{ gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)` }}>
+          {tiles.map((tile, index) => (
+            <button
+              key={index}
+              onClick={() => handleTileClick(index)}
+              disabled={revealed[index] || gameOver}
+              className={`tile ${revealed[index] ? 'revealed' : ''} ${index === lastIncorrect ? 'incorrect' : ''}`}
+            >
+              {revealed[index] ? (
+                <img src={tile.img} alt={tile.type} />
+              ) : (
+                <span>{index + 1}</span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div className={`player-panel ${player === 'banana' ? 'active' : 'inactive'}`}>
+          <h2>Banana</h2>
+          <p>Score: {scores.banana}</p>
+        </div>
       </div>
 
       {gameOver && (
-        <div className="overlay-screen winner-screen">
-          <h1>{winner.charAt(0).toUpperCase() + winner.slice(1)} Wins!</h1>
-          <div className="score-display">
-            <p>Chicken: {scores.chicken}</p>
-            <p>Banana: {scores.banana}</p>
-          </div>
-          <button onClick={() => {
-            setTiles(getShuffledTiles());
-            setRevealed(Array(TILE_COUNT).fill(false));
-            setLastIncorrect(null);
-            setPlayer('chicken');
-            setGameOver(false);
-            setWinner('');
-            setScores({ chicken: 0, banana: 0 });
-            setResetClicks({ chicken: false, banana: false });
-          }}>
-            Reset
-          </button>
+        <div className="overlay-screen">
+          <h2>{winner.charAt(0).toUpperCase() + winner.slice(1)} Wins!</h2>
+          <p>Chicken: {scores.chicken}</p>
+          <p>Banana: {scores.banana}</p>
+          <button onClick={handleReset}>Reset Game</button>
         </div>
       )}
-      <div>
-
-      </div>
     </div>
   );
 }
