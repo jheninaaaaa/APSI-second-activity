@@ -4,7 +4,6 @@ import './App.css';
 const TILE_COUNT = 36;
 const GRID_COLUMNS = 6;
 
-// Chickens and bananas (18 each)
 const imageUrls = [
   ...Array(18).fill('https://thumbs.dreamstime.com/b/bunch-bananas-6175887.jpg?w=768'),
   ...Array(18).fill('https://static.vecteezy.com/system/resources/thumbnails/006/325/752/small_2x/chicken-cartoon-colored-clipart-illustration-free-vector.jpg'),
