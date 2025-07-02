@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import './App.css';
 import PlayerPanel from './components/PlayerPanel';
 import GameBoard from './components/GameBoard';
-import { chicken, banana } from './assets/images';
+export const chicken = 'https://static.vecteezy.com/system/resources/previews/011/216/290/original/cartoon-cute-chicken-free-png.png';
+export const banana = 'https://clipart-library.com/newimages/banana-clip-art-13.png';
 
 const TILE_COUNT = 36;
 const GRID_COLUMNS = 6;
@@ -123,7 +124,7 @@ function App() {
             <p>Chicken: {scores.chicken}</p>
             <p>Banana: {scores.banana}</p>
           </div>
-          <button onClick={() => {
+          <button className="restart-button" onClick={() => {
             setTiles(getShuffledTiles());
             setRevealed(Array(TILE_COUNT).fill(false));
             setLastIncorrect(null);

@@ -1,19 +1,19 @@
 body {
   font-family: 'Poppins';
-  background: radial-gradient(circle at top left, hsl(349, 48%, 26%), #060606);
+  background-color: #151515;
   margin: 0;
   padding: 0;
 }
 
 .app-container {
   text-align: center;
-  background-color: #ccc;
   padding: 20px;
 }
 
 .game-title {
   font-size: 50px;
   margin-bottom: 20px;
+  color: #ccc;
 }
 
 .game-layout {
@@ -28,11 +28,13 @@ body {
   border: 2px solid #ccc;
   border-radius: 8px;
   transition: background-color 0.3s;
-  flex:1 1 33%;
+  color: #ccc;
 }
 
 .player-panel.active {
   background-color: #dff0d8;
+  box-shadow: 0 0 10px #9ecaed;
+  color: #1a1a1a;
 }
 
 .player-panel.inactive {
@@ -56,15 +58,16 @@ body {
   border: 1px solid #666;
   background-color: #fff;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .reset-button:hover {
-  background-color: #ddd;
+  background-color: #b94343;
 }
 
 .game-board {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   width: fit-content;
 }
 
@@ -76,6 +79,11 @@ body {
   font-size: 16px;
   cursor: pointer;
   border-radius: 5px;
+}
+
+.tile:hover {
+  background-color: #e5e5e5;
+  box-shadow: 0 0 10px #9ecaed;
 }
 
 .tile-img {
@@ -102,13 +110,14 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(240, 240, 240, 0.95);
+  background: #151515;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 100;
   text-align: center;
+  color: #ccc;
 }
 
 .winner-screen h1 {
@@ -126,4 +135,10 @@ body {
   font-size: 1rem;
   padding: 10px 20px;
   cursor: pointer;
+  border-radius: 5px;
+}
+
+.restart-button:hover {
+  background-color: #b94343;
+  border-color: #b94343;;
 }

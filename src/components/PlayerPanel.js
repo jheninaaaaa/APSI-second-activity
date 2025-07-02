@@ -1,7 +1,14 @@
 import React from 'react';
-import ResetButton from './ResetButton';
 
 function PlayerPanel({ type, image, score, active, onReset, resetState }) {
+    function ResetButton({ clicked, onClick }) {
+    return (
+      <button className="reset-button" onClick={onClick}>
+        reset ({clicked ? '1' : '0'}/2)
+      </button>
+    );
+  }
+
   return (
     <div className={`player-panel ${active ? 'active' : 'inactive'}`}>
       <h3>{type.toUpperCase()}</h3>
