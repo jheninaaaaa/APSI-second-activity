@@ -33,70 +33,80 @@ function App() {
   const [tiles, setTiles] = useState(getShuffledTiles());
   const [revealed, setRevealed] = useState(Array(TILE_COUNT).fill(false));
   const [lastIncorrect, setLastIncorrect] = useState(null);
-  const [player, setPlayer] = useState('chicken');
-  const [gameOver, setGameOver] = useState(false);
   const [winner, setWinner] = useState('');
   const [scores, setScores] = useState({ chicken: 0, banana: 0 });
-  const [resetClicks, setResetClicks] = useState({ chicken: false, banana: false });
+  const [player, setPlayer] = useState('');
+  const [playerSelected, setPlayerSelected] = useState(false);
+
+  // Select player and close overlay
+  function selectPlayer(choice) {
+    setPlayer(choice);
+    setPlayerSelected(true);
+  }
 
   const handleTileClick = (index) => {
-    if (revealed[index] || gameOver) return;
-
+    if (revealed[index] || winner) return;
+    
     const updatedRevealed = [...revealed];
     updatedRevealed[index] = true;
     setRevealed(updatedRevealed);
-
     const clickedTile = tiles[index];
 
     if (clickedTile.type !== player) {
-
       setLastIncorrect(index);
       const opponent = player === 'chicken' ? 'banana' : 'chicken';
       setWinner(opponent);
-      setGameOver(true);
-
       setScores(prev => ({
         ...prev,
         [opponent]: prev[opponent] + 1,
       }));
     } else {
-
       setScores(prev => ({
         ...prev,
         [player]: prev[player] + 1,
       }));
-
-      setPlayer(prev => (prev === 'chicken' ? 'banana' : 'chicken'));
     }
   };
 
-  const handleResetClick = (playerId) => {
-    const updatedClicks = { ...resetClicks, [playerId]: true };
-    setResetClicks(updatedClicks);
+  // Reset game state
+  const handleResetClick = () => {
+    setTiles(getShuffledTiles());
+    setRevealed(Array(TILE_COUNT).fill(false));
+    setLastIncorrect(null);
+    setWinner();
+    setScores({ chicken: 0, banana: 0 });
+    setPlayer('');
+    setPlayerSelected(false); // show overlay again for player selection
+  };
 
-    if (updatedClicks.chicken && updatedClicks.banana) {
-      setTiles(getShuffledTiles());
-      setRevealed(Array(TILE_COUNT).fill(false));
-      setLastIncorrect(null);
-      setPlayer('chicken');
-      setGameOver(false);
-      setWinner('');
-      setScores({ chicken: 0, banana: 0 });
-      setResetClicks({ chicken: false, banana: false });
-    }
+  // Reveal all tiles 
+  const handleRevealClick = () => {
+    setRevealed(Array(TILE_COUNT).fill(true));
   };
 
   return (
     <div className="app-container">
-      <h1 className="game-title">MineSweeper</h1>
+      <h1 className="game-title">Chicken Banana Game</h1>
+
+      {/* Player selection overlay */}
+      {!playerSelected && (
+        <div className="overlay">
+          <div className="overlay-content">
+            <h2>Choose Your Player</h2>
+            <button onClick={() => selectPlayer('chicken')}>Chicken</button>
+            <button onClick={() => selectPlayer('banana')}>Banana</button>
+          </div>
+        </div>
+      )}
+
       <div className="game-layout">
         <PlayerPanel
           type="chicken"
           image={chicken}
           score={scores.chicken}
           active={player === 'chicken'}
-          onReset={() => handleResetClick('chicken')}
-          resetState={resetClicks.chicken}
+          onReset={handleResetClick} 
+          resetState={false} 
         />
 
         <GameBoard
@@ -112,35 +122,24 @@ function App() {
           image={banana}
           score={scores.banana}
           active={player === 'banana'}
-          onReset={() => handleResetClick('banana')}
-          resetState={resetClicks.banana}
+          onReset={handleResetClick}
+          resetState={false} 
         />
       </div>
 
-      {gameOver && (
-        <div className="overlay-screen winner-screen">
-          <h1>{winner.charAt(0).toUpperCase() + winner.slice(1)} Wins!</h1>
-          <div className="score-display">
-            <p>Chicken: {scores.chicken}</p>
-            <p>Banana: {scores.banana}</p>
+      <div className="bottom-controls">
+          <button className="reset-btn" onClick={handleResetClick}>Reset Game</button>
+          <button className="reveal-btn" onClick={handleRevealClick}>Reveal All</button>
+      </div>
+
+      {winner && (
+        <div className='winner-overlay'>
+          <div className='winner-overlay-content'>
+            <h2>{winner.charAt(0).toLocaleUpperCase() + winner.slice(1)} WINS!</h2>
+            <button onClick={handleResetClick}>Play Again</button>
           </div>
-          <button className="restart-button" onClick={() => {
-            setTiles(getShuffledTiles());
-            setRevealed(Array(TILE_COUNT).fill(false));
-            setLastIncorrect(null);
-            setPlayer('chicken');
-            setGameOver(false);
-            setWinner('');
-            setScores({ chicken: 0, banana: 0 });
-            setResetClicks({ chicken: false, banana: false });
-          }}>
-            Reset
-          </button>
         </div>
       )}
-      <div>
-
-      </div>
     </div>
   );
 }

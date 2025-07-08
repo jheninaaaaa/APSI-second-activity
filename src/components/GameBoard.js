@@ -20,7 +20,10 @@ function GameBoard({ tiles, revealed, onTileClick, columns, lastIncorrect }) {
           )}
         </button>
       ))}
+      
     </div>
+
+        
   );
 }
 
